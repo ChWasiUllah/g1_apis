@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,16 +38,36 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "debug_toolbar",
+    "corsheaders",
+    'rest_framework',
+    'django_otp',
+    'django_otp.plugins.otp_email',
+    'djoser',
+    'core',
 ]
 
+
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
 ]
 
 ROOT_URLCONF = 'g1_product.urls'
@@ -73,12 +94,7 @@ WSGI_APPLICATION = 'g1_product.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = "Add your Database Configuration"
 
 
 # Password validation
@@ -121,3 +137,56 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING' : False,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+   "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+   "UPDATE_LAST_LOGIN": True,
+}
+DOMAIN = 'localhost:3000'
+# SITE_NAME = config('SITE_NAME') #Example
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE':True,
+    'ACTIVATION_URL': '/api/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL':True,
+    'SEND_CONFIRMATION_EMAIL':True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION':True,
+    'PASSWORD_RESET_CONFIRM_URL':'auth/password-forget/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_RETYPE':True,
+    'SET_PASSWORD_RETYPE':True,
+    'USERNAME_RESET_SHOW_EMAIL_NOT_FOUND':True,
+    'TOKEN_MODEL':None,
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.IsAdminUser'],
+        'user_create': ['rest_framework.permissions.AllowAny'],
+        'user_delete': ['rest_framework.permissions.IsAdminUser'],
+    },
+    'SERIALIZERS' : {
+        'user_create': 'core.serializers.UserCreateSerializer',
+        'current_user': 'core.serializers.UserSerializer',
+        'user_delete': 'djoser.serializers.UserDeleteSerializer',
+    },
+     'EMAIL': {
+        'activation': 'core.email.ActivationEmail',
+        'confirmation': 'core.email.ConfirmationEmail',
+        'password_reset': 'core.email.PasswordResetEmail',
+        'password_changed_confirmation': 'core.email.PasswordChangedConfirmationEmail',
+    },
+}
+# APPEND_SLASH=False
+AUTH_USER_MODEL = 'core.User'
+
+try:
+    from local_settings import *
+    
+except Exception as e:
+    pass
