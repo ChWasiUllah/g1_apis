@@ -150,17 +150,16 @@ SIMPLE_JWT = {
    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
    "UPDATE_LAST_LOGIN": True,
 }
-DOMAIN = 'localhost:3000'
-# SITE_NAME = config('SITE_NAME') #Example
+
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE':True,
-    'ACTIVATION_URL': '/api/activate/{uid}/{token}',
+    'ACTIVATION_URL': 'active/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL':True,
     'SEND_CONFIRMATION_EMAIL':True,
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION':True,
-    'PASSWORD_RESET_CONFIRM_URL':'auth/password-forget/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL':'reset-password/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_RETYPE':True,
     'SET_PASSWORD_RETYPE':True,
     'USERNAME_RESET_SHOW_EMAIL_NOT_FOUND':True,
