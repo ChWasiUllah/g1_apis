@@ -183,11 +183,3 @@ DJOSER = {
         'password_changed_confirmation': 'core.email.PasswordChangedConfirmationEmail',
     },
 }
-# APPEND_SLASH=False
-AUTH_USER_MODEL = 'core.User'
-
-try:
-    from local_settings import *
-    
-except Exception as e:
-    pass
